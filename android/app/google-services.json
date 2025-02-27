@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1045583504766",
+    "project_id": "gg1-project",
+    "storage_bucket": "gg1-project.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1045583504766:android:cfe7b4813428384bfa7f2f",
+        "android_client_info": {
+          "package_name": "com.example.gg"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_4l12tpTRex_VWRxyAtWf2B6pXEGS2BU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
