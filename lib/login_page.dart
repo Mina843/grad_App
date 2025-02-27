@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gg/register/register_page.dart';
 import 'home_page.dart'; // استيراد صفحة HomePage
 import 'package:animate_do/animate_do.dart';
 
@@ -144,11 +145,19 @@ class _LoginPageState extends State<LoginPage> {
                             'Don\'t have a account?',
                           ),
                           TextButton(
-                              onPressed: () {},
-                              child: Text(
-                                'Join Now',
-                                style: TextStyle(color: Colors.orange[900]),
-                              ))
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const RegisterPage(),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              'Join Now',
+                              style: TextStyle(color: Colors.orange[900]),
+                            ),
+                          ),
                         ],
                       ),
                       Text(
