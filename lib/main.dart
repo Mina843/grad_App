@@ -3,17 +3,19 @@ import 'package:flutter/material.dart';
 import 'login_page.dart';
 
 void main() {
-  runApp(SmartWheelchairApp());
+  runApp(const SmartWheelchairApp());
 }
 
 class SmartWheelchairApp extends StatelessWidget {
+  const SmartWheelchairApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Smart Wheelchair',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: LoginPage(),
+      home: const LoginPage(),
     );
   }
 }
