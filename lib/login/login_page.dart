@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:gg/login/login_cubit/login_cubit.dart';
+import '../MainMenuPage.dart';
 import '../home_page.dart';
 import '../register/register_page.dart';
 
@@ -166,7 +167,7 @@ class _LoginPageState extends State<LoginPage> {
                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => const HomePage()),
+                                        builder: (context) =>  MainMenuPage()),
                                   );
                                 });
                               } else if (state is LoginFailure) {

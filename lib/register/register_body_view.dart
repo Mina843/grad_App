@@ -5,20 +5,23 @@ import 'package:gg/register/register_cubit.dart/register_cubit.dart';
 import 'package:gg/register/register_page_header.dart';
 import 'package:gg/register/register_text_field.dart';
 import 'package:gg/register/user_have_account.dart';
+import '../MainMenuPage.dart';
 
 class RegisterBodyView extends StatelessWidget {
-  const RegisterBodyView({
+   RegisterBodyView({
     super.key,
     required this.nameController,
     required this.emailController,
     required this.passwordController,
-    required this.errorMessage,
+    required this.errorMessage, required TextEditingController confirmPasswordController,
   });
 
   final TextEditingController nameController;
   final TextEditingController emailController;
   final TextEditingController passwordController;
   final String errorMessage;
+  final TextEditingController confirmPasswordController = TextEditingController();
+
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +64,7 @@ class RegisterBodyView extends StatelessWidget {
                           nameController: nameController,
                           emailController: emailController,
                           passwordController: passwordController,
+                            confirmPasswordController: confirmPasswordController
                         ),
                       ),
                     ),
@@ -69,14 +73,19 @@ class RegisterBodyView extends StatelessWidget {
                     BlocConsumer<RegisterCubit, RegisterState>(
                       listener: (context, state) {
                         if (state is RegisterSuccess) {
-                          // عرض رسالة نجاح والتنقل للخلف
+                          // عرض رسالة نجاح
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text("Registration Successful! 🎉"),
                               backgroundColor: Colors.green,
                             ),
                           );
-                          Navigator.pop(context);
+
+                          // الانتقال مباشرةً إلى MainMenu
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) =>  MainMenuPage()),
+                          );
                         } else if (state is RegisterFailure) {
                           // عرض رسالة خطأ
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -87,6 +96,7 @@ class RegisterBodyView extends StatelessWidget {
                           );
                         }
                       },
+
                       builder: (context, state) {
                         if (state is RegisterLoading) {
                           return const Center(
@@ -123,6 +133,15 @@ class RegisterBodyView extends StatelessWidget {
                                   const SnackBar(
                                     content: Text(
                                         "Password must be at least 6 characters"),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                                return;
+                              }
+                              if (password != confirmPasswordController.text.trim()) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text("Passwords do not match"),
                                     backgroundColor: Colors.red,
                                   ),
                                 );

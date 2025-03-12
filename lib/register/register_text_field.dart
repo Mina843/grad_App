@@ -6,11 +6,13 @@ class RegisterTextFieldWidget extends StatelessWidget {
     required this.nameController,
     required this.emailController,
     required this.passwordController,
+    required this.confirmPasswordController,
   });
 
   final TextEditingController nameController;
   final TextEditingController emailController;
   final TextEditingController passwordController;
+  final TextEditingController confirmPasswordController;
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +54,22 @@ class RegisterTextFieldWidget extends StatelessWidget {
             obscureText: true,
             decoration: const InputDecoration(
                 hintText: "Password",
+                hintStyle: TextStyle(color: Colors.grey),
+                border: InputBorder.none),
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: Colors.grey.shade200),
+            ),
+          ),
+          child: TextField(
+            controller: confirmPasswordController,
+            obscureText: true,
+            decoration: const InputDecoration(
+                hintText: "Confirm Password",
                 hintStyle: TextStyle(color: Colors.grey),
                 border: InputBorder.none),
           ),

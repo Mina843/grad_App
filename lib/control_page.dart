@@ -1,24 +1,50 @@
 import 'package:flutter/material.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'login/login_page.dart'; // تأكد من استيراد صفحة تسجيل الدخول
 
 class ControlPage extends StatefulWidget {
-  const ControlPage({super.key});
-
   @override
   _ControlPageState createState() => _ControlPageState();
 }
 
 class _ControlPageState extends State<ControlPage> {
-  void _connectBluetooth() {
+  bool isArabic = false; // اللغة الافتراضية هي الإنجليزية
+
+  void showMovementMessage(String direction) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("🔵 البحث عن أجهزة بلوتوث...")),
+      SnackBar(
+        content: Text(
+          isArabic
+              ? (direction == "Forward"
+              ? "تحرك للأمام"
+              : direction == "Backward"
+              ? "تحرك للخلف"
+              : direction == "Left"
+              ? "تحرك لليسار"
+              : direction == "Right"
+              ? "تحرك لليمين"
+              : "تم التوقف")
+              : direction == "Stop"
+              ? "Stopped!"
+              : "Moving $direction...",
+          style: TextStyle(fontSize: 16),
+        ),
+        duration: Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: direction == "Stop" ? Colors.grey.shade800 : Colors.deepPurpleAccent,
+      ),
     );
   }
 
-  void moveWheelchair(String direction) {
-    print("🔄 الكرسي يتحرك: $direction");
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("🚀 يتحرك: $direction")),
+  void _toggleLanguage(bool arabic) {
+    setState(() {
+      isArabic = arabic;
+    });
+  }
+
+  void _logout() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()), // انتقل إلى صفحة تسجيل الدخول
     );
   }
 
@@ -26,116 +52,122 @@ class _ControlPageState extends State<ControlPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("🦼 تحكم في الكرسي الذكي",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        title: Text(isArabic ? "تحكم في الكرسي المتحرك" : "Wheelchair Control"),
         centerTitle: true,
-        backgroundColor: Colors.blueAccent, // لون الخلفية للعنوان
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.bluetooth, color: Colors.white, size: 28),
-            onPressed: _connectBluetooth,
-          ),
-        ],
+        backgroundColor: Colors.blueAccent,
       ),
-      body: Stack(
-        children: [
-          // الخلفية الشفافة
-          Positioned.fill(
-            child: Opacity(
-              opacity: 0.2,
-              child: Image.asset(
-                "assets/tech.png",
-                fit: BoxFit.cover,
-              ),
-            ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blue.shade900, Colors.blue.shade300],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+        ),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              // دوائر عرض نسبة الأكسجين والنبضات
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  CircularPercentIndicator(
-                    radius: 60.0,
-                    lineWidth: 10.0,
-                    percent: 0.85,
-                    center: const Text("85%",
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold)),
-                    progressColor: Colors.green,
-                    circularStrokeCap: CircularStrokeCap.round,
-                    header: const Text("الأكسجين"),
-                  ),
-                  CircularPercentIndicator(
-                    radius: 60.0,
-                    lineWidth: 10.0,
-                    percent: 0.75,
-                    center: const Text("75%",
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold)),
-                    progressColor: Colors.red,
-                    circularStrokeCap: CircularStrokeCap.round,
-                    header: const Text("نبض القلب"),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 30),
-              // أزرار التحكم في الاتجاهات
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_upward,
-                        size: 50, color: Colors.blue),
-                    onPressed: () => moveWheelchair("أمام"),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back,
-                        size: 50, color: Colors.blue),
-                    onPressed: () => moveWheelchair("يسار"),
-                  ),
-                  const SizedBox(width: 30),
-                  IconButton(
-                    icon: const Icon(Icons.arrow_forward,
-                        size: 50, color: Colors.blue),
-                    onPressed: () => moveWheelchair("يمين"),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_downward,
-                        size: 50, color: Colors.blue),
-                    onPressed: () => moveWheelchair("خلف"),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              // زر الطوارئ
+              // زر الأمام
               ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("🚨 تم تفعيل وضع الطوارئ!")),
-                  );
-                },
-                child: Text("🔴 تنبيه الطوارئ"),
+                onPressed: () => showMovementMessage("Forward"),
+                child: Text(isArabic ? "أمام" : "Forward",
+                    style: TextStyle(fontSize: 18)),
                 style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 40),
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+              SizedBox(height: 15),
+
+              // صف الأزرار: يسار - توقف - يمين
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // زر اليسار
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => showMovementMessage("Left"),
+                      child: Text(isArabic ? "يسار" : "Left",
+                          style: TextStyle(fontSize: 18)),
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                        backgroundColor: Colors.orange,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // تباعد بين الأزرار
+                  SizedBox(width: 10),
+
+                  // زر التوقف في المنتصف
+                  ElevatedButton.icon(
+                    onPressed: () => showMovementMessage("Stop"),
+                    icon: Icon(Icons.stop, size: 28),
+                    label: Text(
+                      isArabic ? "إيقاف" : "Stop",
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+                      backgroundColor: Colors.grey.shade800,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                      elevation: 5,
+                    ),
+                  ),
+
+                  // تباعد بين الأزرار
+                  SizedBox(width: 10),
+
+                  // زر اليمين
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => showMovementMessage("Right"),
+                      child: Text(isArabic ? "يمين" : "Right",
+                          style: TextStyle(fontSize: 18)),
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                        backgroundColor: Colors.orange,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              SizedBox(height: 15),
+
+              // زر الخلف
+              ElevatedButton(
+                onPressed: () => showMovementMessage("Backward"),
+                child: Text(isArabic ? "خلف" : "Backward",
+                    style: TextStyle(fontSize: 18)),
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 40),
                   backgroundColor: Colors.red,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }

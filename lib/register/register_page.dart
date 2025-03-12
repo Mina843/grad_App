@@ -14,6 +14,8 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+
   String errorMessage = '';
 
   @override
@@ -37,6 +39,7 @@ class _RegisterPageState extends State<RegisterPage> {
               nameController: nameController,
               emailController: emailController,
               passwordController: passwordController,
+              confirmPasswordController: confirmPasswordController,
               errorMessage: errorMessage),
         ),
       ),
