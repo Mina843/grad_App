@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'MainMenuPage.dart';
 import 'control_page.dart';
 
 class BluetoothPage extends StatefulWidget {
@@ -12,6 +13,7 @@ class BluetoothPage extends StatefulWidget {
 }
 
 class _BluetoothPageState extends State<BluetoothPage> {
+
   final _bluetooth = FlutterBluetoothSerial.instance;
   BluetoothConnection? _connection;
   List<BluetoothDevice> _devices = [];
@@ -25,8 +27,9 @@ class _BluetoothPageState extends State<BluetoothPage> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ControlPage(connection: _connection!),
-        ),
+          builder: (context) => MainMenuPage(connection: _connection)!),
+
+
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -148,7 +151,7 @@ class _BluetoothPageState extends State<BluetoothPage> {
             padding: const EdgeInsets.all(16.0),
             child: ElevatedButton(
               onPressed: _navigateToControlPage,
-              child: const Text("Control Wheelchair"),
+              child: const Text("Main Menu"),
             ),
           ),
         ],

@@ -8,7 +8,10 @@ import 'BluetoothPage.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 
 class MainMenuPage extends StatefulWidget {
+  final BluetoothConnection? connection;
+  MainMenuPage({Key? key, this.connection}) : super(key: key);
   @override
+
   _MainMenuPageState createState() => _MainMenuPageState();
 }
 
@@ -156,7 +159,7 @@ class _MainMenuPageState extends State<MainMenuPage> {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => ControlPage()),
+                            MaterialPageRoute(builder: (context) => ControlPage(connection: widget.connection)),
                           );
                         },
                         color: Colors.blueAccent,

@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'control_page.dart'; // صفحة التحكم بالكرسي
 import 'login/login_page.dart'; // صفحة تسجيل الدخول
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final BluetoothConnection? connection; // استقبل الاتصال هنا
+  const HomePage({super.key, this.connection});
+
+
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -138,9 +142,10 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 20),
 
             // زر الانتقال إلى صفحة التحكم
+            /*
             ElevatedButton(
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => ControlPage()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => ControlPage(connection: widget.connection)));
               },
               child: Text(isArabic ? "🚀 انتقل إلى التحكم" : "🚀 Go to Control"),
               style: ElevatedButton.styleFrom(
@@ -149,6 +154,7 @@ class _HomePageState extends State<HomePage> {
                 textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
+            */
           ],
         ),
       ),
