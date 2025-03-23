@@ -4,6 +4,8 @@ import 'HealthFeaturePage.dart';
 import 'control_page.dart';
 import 'login/login_page.dart';
 import 'home_page.dart';
+import 'BluetoothPage.dart';
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 
 class MainMenuPage extends StatefulWidget {
   @override
@@ -12,10 +14,32 @@ class MainMenuPage extends StatefulWidget {
 
 class _MainMenuPageState extends State<MainMenuPage> {
   String _currentLanguage = 'en'; // اللغة الافتراضية إنجليزية
+  bool _isBluetoothConnected = false;
 
   void _changeLanguage(String languageCode) {
     setState(() {
       _currentLanguage = languageCode;
+    });
+  }
+
+  Future<void> _checkBluetoothConnection() async {
+    try {
+      var bluetooth = FlutterBluetoothSerial.instance;
+      List<BluetoothDevice> devices = await bluetooth.getBondedDevices();
+
+      for (var device in devices) {
+        if (device.isConnected) {
+          setState(() {
+            _isBluetoothConnected = true;
+          });
+          return;
+        }
+      }
+    } catch (e) {
+      print("⚠️ خطأ أثناء التحقق من البلوتوث: $e");
+    }
+    setState(() {
+      _isBluetoothConnected = false;
     });
   }
 
@@ -62,24 +86,12 @@ class _MainMenuPageState extends State<MainMenuPage> {
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
         leading: IconButton(
-          icon: Icon(Icons.bluetooth, size: 28),
-          onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Row(
-                  children: [
-                    CircularProgressIndicator(),
-                    SizedBox(width: 10),
-                    Text(
-                      isArabic ? "جاري البحث عن الأجهزة..." : "Searching for devices...",
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ],
-                ),
-                duration: Duration(seconds: 3),
-                behavior: SnackBarBehavior.floating,
-                backgroundColor: Colors.blueAccent,
-              ),
+          icon: Icon(Icons.bluetooth, color: _isBluetoothConnected ? Colors.green : Colors.white),
+          onPressed: () async {
+            await _checkBluetoothConnection();
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => BluetoothPage()),
             );
           },
         ),
@@ -119,13 +131,12 @@ class _MainMenuPageState extends State<MainMenuPage> {
       ),
       body: Stack(
         children: [
-          // الخلفية مع شفافية
           Opacity(
-            opacity: 0.3, // شفافية الخلفية
+            opacity: 0.3,
             child: Container(
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage('assets/background.png'), // تأكد من وجود الصورة في المسار الصحيح
+                  image: AssetImage('assets/background.png'),
                   fit: BoxFit.cover,
                 ),
               ),

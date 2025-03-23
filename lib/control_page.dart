@@ -1,13 +1,19 @@
+import 'dart:typed_data' show Uint8List;
+
 import 'package:flutter/material.dart';
-import 'login/login_page.dart'; // تأكد من استيراد صفحة تسجيل الدخول
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import '../login/login_page.dart';
 
 class ControlPage extends StatefulWidget {
+  final BluetoothConnection? connection;
+  const ControlPage({super.key, this.connection});
+
   @override
   _ControlPageState createState() => _ControlPageState();
 }
 
 class _ControlPageState extends State<ControlPage> {
-  bool isArabic = false; // اللغة الافتراضية هي الإنجليزية
+  bool isArabic = false;
 
   void showMovementMessage(String direction) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -26,13 +32,43 @@ class _ControlPageState extends State<ControlPage> {
               : direction == "Stop"
               ? "Stopped!"
               : "Moving $direction...",
-          style: TextStyle(fontSize: 16),
+          style: const TextStyle(fontSize: 16),
         ),
-        duration: Duration(seconds: 2),
+        duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
-        backgroundColor: direction == "Stop" ? Colors.grey.shade800 : Colors.deepPurpleAccent,
+        backgroundColor:
+        direction == "Stop" ? Colors.grey.shade800 : Colors.deepPurpleAccent,
       ),
     );
+    sendCommand(direction);
+  }
+
+  void sendCommand(String direction) {
+    if (widget.connection != null && widget.connection!.isConnected) {
+      String command = '';
+      switch (direction) {
+        case "Forward":
+          command = 'o';
+          break;
+        case "Backward":
+          command = 'a';
+          break;
+        case "Right":
+          command = 'i';
+          break;
+        case "Left":
+          command = 'e';
+          break;
+        case "Stop":
+          command = 't';
+          break;
+      }
+      widget.connection!.output.add(Uint8List.fromList(command.codeUnits));
+      widget.connection!.output.allSent;
+      print("📡 تم إرسال: $command");
+    } else {
+      print("⚠️ غير متصل بالبلوتوث!");
+    }
   }
 
   void _toggleLanguage(bool arabic) {
@@ -44,7 +80,7 @@ class _ControlPageState extends State<ControlPage> {
   void _logout() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => LoginPage()), // انتقل إلى صفحة تسجيل الدخول
+      MaterialPageRoute(builder: (context) => LoginPage()),
     );
   }
 
@@ -68,13 +104,11 @@ class _ControlPageState extends State<ControlPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // زر الأمام
               ElevatedButton(
                 onPressed: () => showMovementMessage("Forward"),
-                child: Text(isArabic ? "أمام" : "Forward",
-                    style: TextStyle(fontSize: 18)),
+                child: Text(isArabic ? "أمام" : "Forward", style: const TextStyle(fontSize: 18)),
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 40),
+                  padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 40),
                   backgroundColor: Colors.green,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
@@ -82,20 +116,16 @@ class _ControlPageState extends State<ControlPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 15),
-
-              // صف الأزرار: يسار - توقف - يمين
+              const SizedBox(height: 15),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // زر اليسار
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () => showMovementMessage("Left"),
-                      child: Text(isArabic ? "يسار" : "Left",
-                          style: TextStyle(fontSize: 18)),
+                      child: Text(isArabic ? "يسار" : "Left", style: const TextStyle(fontSize: 18)),
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                         backgroundColor: Colors.orange,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
@@ -104,20 +134,16 @@ class _ControlPageState extends State<ControlPage> {
                       ),
                     ),
                   ),
-
-                  // تباعد بين الأزرار
-                  SizedBox(width: 10),
-
-                  // زر التوقف في المنتصف
+                  const SizedBox(width: 10),
                   ElevatedButton.icon(
                     onPressed: () => showMovementMessage("Stop"),
-                    icon: Icon(Icons.stop, size: 28),
+                    icon: const Icon(Icons.stop, size: 28),
                     label: Text(
                       isArabic ? "إيقاف" : "Stop",
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+                      padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
                       backgroundColor: Colors.grey.shade800,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
@@ -126,18 +152,13 @@ class _ControlPageState extends State<ControlPage> {
                       elevation: 5,
                     ),
                   ),
-
-                  // تباعد بين الأزرار
-                  SizedBox(width: 10),
-
-                  // زر اليمين
+                  const SizedBox(width: 10),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () => showMovementMessage("Right"),
-                      child: Text(isArabic ? "يمين" : "Right",
-                          style: TextStyle(fontSize: 18)),
+                      child: Text(isArabic ? "يمين" : "Right", style: const TextStyle(fontSize: 18)),
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                         backgroundColor: Colors.orange,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
@@ -148,16 +169,12 @@ class _ControlPageState extends State<ControlPage> {
                   ),
                 ],
               ),
-
-              SizedBox(height: 15),
-
-              // زر الخلف
+              const SizedBox(height: 15),
               ElevatedButton(
                 onPressed: () => showMovementMessage("Backward"),
-                child: Text(isArabic ? "خلف" : "Backward",
-                    style: TextStyle(fontSize: 18)),
+                child: Text(isArabic ? "خلف" : "Backward", style: const TextStyle(fontSize: 18)),
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 40),
+                  padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 40),
                   backgroundColor: Colors.red,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
