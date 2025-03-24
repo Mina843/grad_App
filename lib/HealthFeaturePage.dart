@@ -1,8 +1,69 @@
+
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
-class HealthFeaturePage extends StatelessWidget {
+class HealthFeaturePage extends StatefulWidget {
   const HealthFeaturePage({super.key});
+
+  @override
+  _HealthFeaturePageState createState() => _HealthFeaturePageState();
+}
+
+class _HealthFeaturePageState extends State<HealthFeaturePage> {
+  double oxygenLevel = 98.0;
+  double temperature = 37.0;
+  BluetoothConnection? connection;
+
+  @override
+  void initState() {
+    super.initState();
+    connectToBluetooth();
+  }
+
+  void connectToBluetooth() async {
+    try {
+      List<BluetoothDevice> devices = await FlutterBluetoothSerial.instance.getBondedDevices();
+      for (var device in devices) {
+        if (device.name == "MyArduinoDevice") { // ضع هنا اسم جهاز البلوتوث الخاص بك
+          BluetoothConnection.toAddress(device.address).then((conn) {
+            setState(() => connection = conn);
+            readData();
+          }).catchError((error) {
+            print("فشل الاتصال: $error");
+          });
+          break;
+        }
+      }
+    } catch (e) {
+      print("خطأ في البحث عن الأجهزة: $e");
+    }
+  }
+
+  void readData() {
+    if (connection == null) return;
+
+    connection!.input!.listen((Uint8List data) {
+      String receivedData = String.fromCharCodes(data);
+      List<String> values = receivedData.trim().split(',');
+
+      if (values.length == 2) {
+        setState(() {
+          oxygenLevel = double.tryParse(values[0]) ?? 0.0;
+          temperature = double.tryParse(values[1]) ?? 0.0;
+        });
+      }
+    }).onDone(() {
+      print("تم قطع الاتصال بالبلوتوث");
+    });
+  }
+
+  @override
+  void dispose() {
+    connection?.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,31 +78,28 @@ class HealthFeaturePage extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          // خلفية الصفحة مع شفافية
           Opacity(
-            opacity: 0.3, // تقليل وضوح الصورة لجعل النصوص واضحة
+            opacity: 0.3,
             child: Container(
               decoration: const BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage("assets/health_background.png"), // تأكد من وضع الصورة داخل مجلد assets
+                  image: AssetImage("assets/health_background.png"),
                   fit: BoxFit.cover,
                 ),
               ),
             ),
           ),
-          // المحتوى الأساسي
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // مؤشر مستوى الأكسجين
                 CircularPercentIndicator(
                   radius: 80.0,
                   lineWidth: 12.0,
-                  percent: 0.85,
-                  center: const Text(
-                    "85%",
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black),
+                  percent: (oxygenLevel / 100).clamp(0.0, 1.0),
+                  center: Text(
+                    "${oxygenLevel.toStringAsFixed(1)}%",
+                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black),
                   ),
                   progressColor: Colors.green,
                   circularStrokeCap: CircularStrokeCap.round,
@@ -55,14 +113,13 @@ class HealthFeaturePage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 40),
-                // مؤشر درجة الحرارة
                 CircularPercentIndicator(
                   radius: 80.0,
                   lineWidth: 12.0,
-                  percent: 0.75,
-                  center: const Text(
-                    "37°C",
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black),
+                  percent: ((temperature - 30) / 10).clamp(0.0, 1.0),
+                  center: Text(
+                    "${temperature.toStringAsFixed(1)}°C",
+                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black),
                   ),
                   progressColor: Colors.red,
                   circularStrokeCap: CircularStrokeCap.round,
