@@ -25,7 +25,7 @@ class _HealthFeaturePageState extends State<HealthFeaturePage> {
     try {
       List<BluetoothDevice> devices = await FlutterBluetoothSerial.instance.getBondedDevices();
       for (var device in devices) {
-        if (device.name == "MyArduinoDevice") { // ضع هنا اسم جهاز البلوتوث الخاص بك
+        if (device.name == "HC-05") { // ضع هنا اسم جهاز البلوتوث الخاص بك
           BluetoothConnection.toAddress(device.address).then((conn) {
             setState(() => connection = conn);
             readData();
