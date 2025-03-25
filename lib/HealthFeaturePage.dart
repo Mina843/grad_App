@@ -1,4 +1,3 @@
-
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
@@ -12,8 +11,8 @@ class HealthFeaturePage extends StatefulWidget {
 }
 
 class _HealthFeaturePageState extends State<HealthFeaturePage> {
-  double oxygenLevel = 98.0;
-  double temperature = 37.0;
+  double heartRate = 0.0; // معدل النبض
+  double temperature = 0.0; // درجة الحرارة
   BluetoothConnection? connection;
 
   @override
@@ -50,8 +49,8 @@ class _HealthFeaturePageState extends State<HealthFeaturePage> {
 
       if (values.length == 2) {
         setState(() {
-          oxygenLevel = double.tryParse(values[0]) ?? 0.0;
-          temperature = double.tryParse(values[1]) ?? 0.0;
+          heartRate = double.tryParse(values[0]) ?? 0.0; // قراءة النبض
+          temperature = double.tryParse(values[1]) ?? 0.0; // قراءة الحرارة
         });
       }
     }).onDone(() {
@@ -93,26 +92,28 @@ class _HealthFeaturePageState extends State<HealthFeaturePage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // مؤشر معدل نبضات القلب
                 CircularPercentIndicator(
                   radius: 80.0,
                   lineWidth: 12.0,
-                  percent: (oxygenLevel / 100).clamp(0.0, 1.0),
+                  percent: (heartRate / 200).clamp(0.0, 1.0), // نطاق 0-200 نبضة
                   center: Text(
-                    "${oxygenLevel.toStringAsFixed(1)}%",
+                    "${heartRate.toStringAsFixed(1)} BPM",
                     style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black),
                   ),
-                  progressColor: Colors.green,
+                  progressColor: Colors.red,
                   circularStrokeCap: CircularStrokeCap.round,
                   backgroundColor: Colors.white24,
                   header: const Padding(
                     padding: EdgeInsets.only(bottom: 10),
                     child: Text(
-                      "Oxygen Level",
+                      "Heart Rate",
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
                     ),
                   ),
                 ),
                 const SizedBox(height: 40),
+                // مؤشر درجة الحرارة
                 CircularPercentIndicator(
                   radius: 80.0,
                   lineWidth: 12.0,
@@ -121,7 +122,7 @@ class _HealthFeaturePageState extends State<HealthFeaturePage> {
                     "${temperature.toStringAsFixed(1)}°C",
                     style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black),
                   ),
-                  progressColor: Colors.red,
+                  progressColor: Colors.blue,
                   circularStrokeCap: CircularStrokeCap.round,
                   backgroundColor: Colors.white24,
                   header: const Padding(
