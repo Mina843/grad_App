@@ -34,6 +34,9 @@ dependencies:
   firebase_core: ^3.12.1
   flutter:
     sdk: flutter
+  flutter_libserialport: ^0.3.0
+  libserialport: ^0.3.0+1
+  usb_serial: ^0.3.0
   flutter_bloc: ^9.0.0
   percent_indicator: ^4.2.4
   flutter_bluetooth_serial: ^0.4.0
